@@ -17,19 +17,21 @@ package com.baidu.fsg.uid;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.springframework.util.Assert;
 
 /**
  * Allocate 64 bits for the UID(long)<br>
  * sign (fixed 1bit) -> deltaSecond -> workerId -> sequence(within the same second)
- * 
+ *
+ * !! 改为不限定总位数 !! --dafei 2020年7月29日
+ *
+ *
  * @author yutianbao
  */
 public class BitsAllocator {
     /**
      * Total 64 bits
      */
-    public static final int TOTAL_BITS = 1 << 6;
+    // public static final int TOTAL_BITS = 1 << 6;
 
     /**
      * Bits for [sign-> second-> workId-> sequence]
@@ -52,6 +54,8 @@ public class BitsAllocator {
     private final int timestampShift;
     private final int workerIdShift;
 
+    private final int totalBits;
+
     /**
      * Constructor with timestampBits, workerIdBits, sequenceBits<br>
      * The highest bit used for sign, so <code>63</code> bits for timestampBits, workerIdBits, sequenceBits
@@ -59,7 +63,8 @@ public class BitsAllocator {
     public BitsAllocator(int timestampBits, int workerIdBits, int sequenceBits) {
         // make sure allocated 64 bits
         int allocateTotalBits = signBits + timestampBits + workerIdBits + sequenceBits;
-        Assert.isTrue(allocateTotalBits == TOTAL_BITS, "allocate not enough 64 bits");
+        // Assert.isTrue(allocateTotalBits == TOTAL_BITS, "allocate not enough 64 bits"); // df: ca, 不需64位!
+        totalBits = allocateTotalBits;
 
         // initialize bits
         this.timestampBits = timestampBits;
@@ -79,7 +84,7 @@ public class BitsAllocator {
     /**
      * Allocate bits for UID according to delta seconds & workerId & sequence<br>
      * <b>Note that: </b>The highest bit will always be 0 for sign
-     * 
+     *
      * @param deltaSeconds
      * @param workerId
      * @param sequence
@@ -88,7 +93,7 @@ public class BitsAllocator {
     public long allocate(long deltaSeconds, long workerId, long sequence) {
         return (deltaSeconds << timestampShift) | (workerId << workerIdShift) | sequence;
     }
-    
+
     /**
      * Getters
      */
@@ -127,10 +132,14 @@ public class BitsAllocator {
     public int getWorkerIdShift() {
         return workerIdShift;
     }
-    
+
+    public int getTotalBits() {
+        return totalBits;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-    
+
 }

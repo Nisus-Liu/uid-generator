@@ -15,19 +15,18 @@
  */
 package com.baidu.fsg.uid.impl;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-
 import com.baidu.fsg.uid.BitsAllocator;
 import com.baidu.fsg.uid.UidGenerator;
 import com.baidu.fsg.uid.exception.UidGenerateException;
 import com.baidu.fsg.uid.utils.DateUtils;
 import com.baidu.fsg.uid.worker.WorkerIdAssigner;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represents an implementation of {@link UidGenerator}
@@ -67,8 +66,11 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
     protected int seqBits = 13;
 
     /** Customer epoch, unit as second. For example 2016-05-20 (ms: 1463673600000)*/
-    protected String epochStr = "2016-05-20";
-    protected long epochSeconds = TimeUnit.MILLISECONDS.toSeconds(1463673600000L);
+    // protected String epochStr = "2016-05-20";
+    // ms: 1589904000000
+    protected String epochStr = "2020-05-20";
+    // protected long epochSeconds = TimeUnit.MILLISECONDS.toSeconds(1463673600000L);
+    protected long epochSeconds = TimeUnit.MILLISECONDS.toSeconds(1589904000000L);
 
     /** Stable fields after spring bean initializing */
     protected BitsAllocator bitsAllocator;
@@ -107,7 +109,8 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
 
     @Override
     public String parseUID(long uid) {
-        long totalBits = BitsAllocator.TOTAL_BITS;
+        // long totalBits = BitsAllocator.TOTAL_BITS;
+        long totalBits = bitsAllocator.getTotalBits();
         long signBits = bitsAllocator.getSignBits();
         long timestampBits = bitsAllocator.getTimestampBits();
         long workerIdBits = bitsAllocator.getWorkerIdBits();
