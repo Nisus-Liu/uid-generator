@@ -36,6 +36,15 @@ public class SimpleUidGeneratorTest {
         System.out.println(uid.nextId());
 
         System.out.println(uid.parseUID(uid.nextId()));
+
+
+        long uid1 = uid.getUID();
+        System.out.println("uid: "+uid1);
+        long prefix = 1680000000000000L;
+        // int tb = uid.bitsAllocator.getTotalBits();
+        // long preUid1 = (prefix << tb) | uid1;
+        // System.out.println(prefi);
+        System.out.println(prefix + uid1);
     }
 
 
